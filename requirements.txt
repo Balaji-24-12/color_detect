@@ -1,6 +1,5 @@
-streamlit
-webcolors
+streamlit==1.35.0
 pandas
 numpy
-opencv
-streamlit_drawable_canvas
+Pillow
+streamlit-drawable-canvas

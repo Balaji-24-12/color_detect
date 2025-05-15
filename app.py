@@ -7,7 +7,7 @@ from streamlit_drawable_canvas import st_canvas
 # Load colors.csv with color names and RGB values
 @st.cache_data
 def load_colors():
-    return pd.read_csv("E:\Balaji\colors.csv")
+    return pd.read_csv("colors.csv")
 
 # Find closest color using Euclidean distance
 def get_closest_color_name(r, g, b, df):

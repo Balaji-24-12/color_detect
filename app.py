@@ -49,7 +49,7 @@ if uploaded_file:
         canvas_result = st_canvas(
             fill_color="rgba(255, 165, 0, 0.3)",
             stroke_width=1,
-            background_image=Image.fromarray(img_rgb),
+            background_image=Image.fromarray(img_rgb).convert("RGBA"),
             update_streamlit=True,
             height=img_rgb.shape[0],
             width=img_rgb.shape[1],

@@ -45,11 +45,14 @@ if uploaded_file:
 
         st.write("Click anywhere on the image to detect color:")
 
+        # Convert RGB image to RGBA (important to avoid 400 error)
+        img_rgba = Image.fromarray(img_rgb).convert("RGBA")
+
         # Use drawable canvas for interaction
         canvas_result = st_canvas(
             fill_color="rgba(255, 165, 0, 0.3)",
             stroke_width=1,
-            background_image=Image.fromarray(img_rgb).convert("RGBA"),
+            background_image=img_rgba,
             update_streamlit=True,
             height=img_rgb.shape[0],
             width=img_rgb.shape[1],
@@ -57,25 +60,27 @@ if uploaded_file:
             key="canvas",
         )
 
-        if canvas_result.json_data and len(canvas_result.json_data["objects"]) > 0:
-            last_obj = canvas_result.json_data["objects"][-1]
-            x = int(last_obj["left"])
-            y = int(last_obj["top"])
+        if canvas_result and canvas_result.json_data is not None:
+            objects = canvas_result.json_data.get("objects", [])
+            if len(objects) > 0:
+                last_obj = objects[-1]
+                x = int(last_obj["left"])
+                y = int(last_obj["top"])
 
-            # Clamp coordinates to image bounds
-            x = min(max(x, 0), img_rgb.shape[1] - 1)
-            y = min(max(y, 0), img_rgb.shape[0] - 1)
+                # Clamp coordinates to image bounds
+                x = min(max(x, 0), img_rgb.shape[1] - 1)
+                y = min(max(y, 0), img_rgb.shape[0] - 1)
 
-            r, g, b = img_rgb[y, x]
-            color_df = load_colors()
-            color_name = get_closest_color_name(r, g, b, color_df)
+                r, g, b = img_rgb[y, x]
+                color_df = load_colors()
+                color_name = get_closest_color_name(r, g, b, color_df)
 
-            st.markdown(f"### 🎯 Detected Color: `{color_name}`")
-            st.markdown(f"**RGB:** ({r}, {g}, {b})")
-            st.markdown(
-                f"<div style='width:120px;height:50px;border:1px solid #000;background-color:rgb({r},{g},{b});'></div>",
-                unsafe_allow_html=True,
-            )
+                st.markdown(f"### 🎯 Detected Color: `{color_name}`")
+                st.markdown(f"**RGB:** ({r}, {g}, {b})")
+                st.markdown(
+                    f"<div style='width:120px;height:50px;border:1px solid #000;background-color:rgb({r},{g},{b});'></div>",
+                    unsafe_allow_html=True,
+                )
 
     except Exception as e:
         st.error(f"⚠️ Error: {e}")
